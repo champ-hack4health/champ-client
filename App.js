@@ -1,10 +1,15 @@
 import React from "react";
 import * as Expo from "expo";
 import * as ImagePicker from "expo-image-picker";
-import * as Permissions from "expo-permissions";
 import uuid from "uuid-random";
-import { FAB } from "react-native-paper";
-import { Button } from "react-native-paper";
+import {
+  Button,
+  FAB,
+  IconButton,
+  Paragraph,
+  Dialog,
+  Portal,
+} from "react-native-paper";
 
 import {
   ActivityIndicator,
@@ -27,10 +32,7 @@ export default class App extends React.Component {
     googleResponse: null,
   };
 
-  async componentDidMount() {
-    await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    await Permissions.askAsync(Permissions.CAMERA);
-  }
+  async componentDidMount() {}
 
   render() {
     let { image } = this.state;
@@ -45,13 +47,12 @@ export default class App extends React.Component {
             {image ? null : (
               <Image
                 source={{
-                  uri: "https://res.cloudinary.com/duehwryfv/image/upload/v1621757309/Screen_Shot_2021-05-23_at_1.07.55_AM_fpq8xn.png",
+                  uri: "https://res.cloudinary.com/duehwryfv/image/upload/v1621759036/Screen_Shot_2021-05-23_at_1.33.06_AM_fnyrnv.png",
                 }}
                 style={{ width: 450, height: 500 }}
               />
             )}
           </View>
-		  
 
           <View style={styles.helpContainer}>
             {this._maybeRenderImage()}
@@ -60,13 +61,15 @@ export default class App extends React.Component {
               onPress={this._pickImage}
               title="Pick an image from camera roll"
             />
-
-            <FAB
-              icon="camera"
+            {image ? null :  <Button
+              icon="camera-outline"
+              mode="outlined"
               style={styles.fab}
               onPress={this._takePhoto}
               title="Take a photo"
-            />
+            >
+              Camera
+            </Button> }
             {this.state.googleResponse && (
               <FlatList
                 data={this.state.googleResponse.responses[0].labelAnnotations}
@@ -120,19 +123,12 @@ export default class App extends React.Component {
       <View
         style={{
           marginTop: 20,
-          width: 250,
+          width: 600,
+		  alignItems: "center",
           borderRadius: 3,
           elevation: 2,
         }}
       >
-        <Button
-          style={{ marginBottom: 10 }}
-          onPress={() => this.submitToGoogle()}
-          title="Analyze!"
-        >
-			Verify
-		</Button>
-
         <View
           style={{
             borderTopRightRadius: 3,
@@ -151,10 +147,34 @@ export default class App extends React.Component {
           onLongPress={this._share}
           style={{ paddingVertical: 10, paddingHorizontal: 10 }}
         />
-
+        <Paragraph>Would you like to upload this picture?</Paragraph>
+        <View style={{flexDirection: "row"}}>
+          <View style={{padding:10}}>
+            <Button
+			  icon="check-outline"
+              mode="contained"
+              style={{ marginBottom: 10 }}
+              onPress={() => this.submitToGoogle()}
+              title="Verify"
+            >
+              Verify
+            </Button>
+          </View>
+		  
+          <View style={{padding:10}}>
+            <Button
+              icon="camera-outline"
+              mode="contained"
+              onPress={this._takePhoto}
+              title="Take a photo"
+            >
+              Camera
+            </Button>
+          </View>
+        </View>
         <Text>Raw JSON:</Text>
 
-        { !this._detectBycle(googleResponse) ?
+        {!this._detectBycle(googleResponse) ? (
           <Text
             onPress={this._copyToClipboard}
             onLongPress={this._share}
@@ -162,30 +182,31 @@ export default class App extends React.Component {
           >
             Great Job! Keep it up!
           </Text>
-         : <Text
+        ) : (
+          <Text
             onPress={this._copyToClipboard}
             onLongPress={this._share}
             style={{ paddingVertical: 10, paddingHorizontal: 10 }}
           >
             Oops Seems like it's not a right photo. Do you want to retake it?
           </Text>
-		}
+        )}
       </View>
     );
   };
 
   _detectBycle = async (googleResponse) => {
-	  if(!responseList) return false
-	  let returnVal = false
-	  let responseList = googleResponse.responses[0].labelAnnotations[0].description 
-	  responseList.forEach(element => {
-		  if(element.description =="Bicycle") {
-			  returnVal = true
-		  }
-	});
-	return returnVal
+    if (!responseList) return false;
+    let returnVal = false;
+    let responseList =
+      googleResponse.responses[0].labelAnnotations[0].description;
+    responseList.forEach((element) => {
+      if (element.description == "Bicycle") {
+        returnVal = true;
+      }
+    });
+    return returnVal;
   };
-
 
   _keyExtractor = (item, index) => item.id;
 
@@ -332,11 +353,17 @@ const styles = StyleSheet.create({
   },
 
   getStartedContainer: {
-	marginTop: 15,
+    marginTop: 15,
     alignItems: "center",
-	justifyContent: 'center'
+    justifyContent: "center",
   },
-
+  fab: {
+    borderColor: "rgba(0,0,0,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: 100,
+  },
   getStartedText: {
     fontSize: 17,
     color: "rgba(96,100,109, 1)",
