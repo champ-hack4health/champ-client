@@ -1,8 +1,6 @@
-import React from 'react';
 import * as Expo from 'expo';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import uuid from "uuid-random";
 
 import {
 	ActivityIndicator,
@@ -10,14 +8,18 @@ import {
 	Clipboard,
 	FlatList,
 	Image,
+	ScrollView,
 	Share,
 	StyleSheet,
 	Text,
-	ScrollView,
 	View
 } from 'react-native';
+
 import Environment from './config/environment';
+import OverlayWindow from 'Overlay.js'
+import React from 'react';
 import firebase from './config/firebase';
+import uuid from "uuid-random";
 
 export default class App extends React.Component {
 	state = {
@@ -53,14 +55,7 @@ export default class App extends React.Component {
 						/>
 
 						<Button onPress={this._takePhoto} title="Take a photo" />
-						{this.state.googleResponse && (
-							<FlatList
-								data={this.state.googleResponse.responses[0].labelAnnotations}
-								extraData={this.state}
-								keyExtractor={this._keyExtractor}
-								renderItem={({ item }) => <Text>Item: {item.description}</Text>}
-							/>
-						)}
+						{this.state.googleResponse && <OverlayWindow />}
 						{this._maybeRenderImage()}
 						{this._maybeRenderUploadingOverlay()}
 					</View>
@@ -71,12 +66,12 @@ export default class App extends React.Component {
 
 	organize = array => {
 		return array.map(function(item, i) {
-			return (
+			return ( 
 				<View key={i}>
 					<Text>{item}</Text>
 				</View>
 			);
-		});
+		})
 	};
 
 	_maybeRenderUploadingOverlay = () => {
@@ -116,7 +111,7 @@ export default class App extends React.Component {
 				<Button
 					style={{ marginBottom: 10 }}
 					onPress={() => this.submitToGoogle()}
-					title="Analyze!"
+					title="Verify my challenge"
 				/>
 
 				<View
@@ -136,9 +131,7 @@ export default class App extends React.Component {
 					onPress={this._copyToClipboard}
 					onLongPress={this._share}
 					style={{ paddingVertical: 10, paddingHorizontal: 10 }}
-				/>
-
-				<Text>Raw JSON:</Text>
+				/>			
 
 				{googleResponse && (
 					<Text
@@ -214,7 +207,7 @@ export default class App extends React.Component {
 				requests: [
 					{
 						features: [
-							{ type: 'LABEL_DETECTION', maxResults: 10 },
+							{ type: 'LABEL_DETECTION', maxResults: 3 },
 							{ type: 'LANDMARK_DETECTION', maxResults: 5 },
 							{ type: 'FACE_DETECTION', maxResults: 5 },
 							{ type: 'LOGO_DETECTION', maxResults: 5 },
