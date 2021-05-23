@@ -4,8 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import uuid from "uuid-random";
 import { FAB } from "react-native-paper";
-import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
-
+import { Avatar, Button, Card, Title, Paragraph, Modal } from "react-native-paper";
 import {
   ActivityIndicator,
   Clipboard,
@@ -25,6 +24,7 @@ export default class App extends React.Component {
     image: null,
     uploading: false,
     googleResponse: null,
+	visible: true,
   };
 
   async componentDidMount() {
@@ -34,7 +34,7 @@ export default class App extends React.Component {
 
   render() {
     let { image } = this.state;
-
+	
     return (
       <View style={styles.container}>
         <ScrollView
@@ -153,20 +153,12 @@ export default class App extends React.Component {
         />
 
         { !this._detectBycle(googleResponse) ?
-          <Text
-            onPress={this._copyToClipboard}
-            onLongPress={this._share}
-            style={{ paddingVertical: 10, paddingHorizontal: 10 }}
-          >
-            Perfect Gina! Keep it up :)
-          </Text>
-         : <Text
-            onPress={this._copyToClipboard}
-            onLongPress={this._share}
-            style={{ paddingVertical: 10, paddingHorizontal: 10 }}
-          >
-            Oops! Seems like it's not a right photo. Do you want to retake it?
-          </Text>
+		  <Modal visible={this.state.visible} onDismiss={false} contentContainerStyle={containerStyle}>
+          <Text>Perfect Gina! Keep it up :)</Text>
+          </Modal>
+         : <Modal visible={this.state.visible} onDismiss={false} contentContainerStyle={containerStyle}>
+          <Text>Oops! Seems like it's not a right photo. Do you want to retake it?</Text>
+        </Modal>
 		}
       </View>
     );
@@ -181,9 +173,14 @@ export default class App extends React.Component {
 			  returnVal = true
 		  }
 	});
+	this._showModal()
 	return returnVal
   };
 
+  _showModal = () => this.setState({visible: true});
+  _hideModal = () => {
+	  if(this.state.visible = true) this.setState({visible: false});
+  }
 
   _keyExtractor = (item, index) => item.id;
 
@@ -289,6 +286,8 @@ export default class App extends React.Component {
     }
   };
 }
+
+const containerStyle = {backgroundColor: 'white', padding: 20};
 
 async function uploadImageAsync(uri) {
   const blob = await new Promise((resolve, reject) => {
