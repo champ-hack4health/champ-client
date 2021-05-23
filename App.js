@@ -152,22 +152,20 @@ export default class App extends React.Component {
           style={{ paddingVertical: 10, paddingHorizontal: 10 }}
         />
 
-        <Text>Raw JSON:</Text>
-
         { !this._detectBycle(googleResponse) ?
           <Text
             onPress={this._copyToClipboard}
             onLongPress={this._share}
             style={{ paddingVertical: 10, paddingHorizontal: 10 }}
           >
-            Great Job! Keep it up!
+            Perfect Gina! Keep it up :)
           </Text>
          : <Text
             onPress={this._copyToClipboard}
             onLongPress={this._share}
             style={{ paddingVertical: 10, paddingHorizontal: 10 }}
           >
-            Oops Seems like it's not a right photo. Do you want to retake it?
+            Oops! Seems like it's not a right photo. Do you want to retake it?
           </Text>
 		}
       </View>
