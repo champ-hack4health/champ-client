@@ -3,10 +3,11 @@ import * as Expo from 'expo';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import uuid from "uuid-random";
+import { Provider as PaperProvider } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 
 import {
 	ActivityIndicator,
-	Button,
 	Clipboard,
 	FlatList,
 	Image,
@@ -35,6 +36,7 @@ export default class App extends React.Component {
 		let { image } = this.state;
 
 		return (
+			<PaperProvider>
 			<View style={styles.container}>
 				<ScrollView
 					style={styles.container}
@@ -46,13 +48,14 @@ export default class App extends React.Component {
 						)}
 					</View>
 
-					<View style={styles.helpContainer}>
 						<Button
 							onPress={this._pickImage}
 							title="Pick an image from camera roll"
 						/>
 
-						<Button onPress={this._takePhoto} title="Take a photo" />
+						<Button icon="camera" onPress={this._takePhoto} mode='outlined'>
+							Take Photo
+						</Button>
 						{this.state.googleResponse && (
 							<FlatList
 								data={this.state.googleResponse.responses[0].labelAnnotations}
@@ -63,9 +66,9 @@ export default class App extends React.Component {
 						)}
 						{this._maybeRenderImage()}
 						{this._maybeRenderUploadingOverlay()}
-					</View>
 				</ScrollView>
 			</View>
+			</PaperProvider>
 		);
 	}
 
@@ -310,10 +313,5 @@ const styles = StyleSheet.create({
 		color: 'rgba(96,100,109, 1)',
 		lineHeight: 24,
 		textAlign: 'center'
-	},
-
-	helpContainer: {
-		marginTop: 15,
-		alignItems: 'center'
 	}
 });
