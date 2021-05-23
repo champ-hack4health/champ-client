@@ -4,7 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import uuid from "uuid-random";
 import { FAB } from "react-native-paper";
-import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
+import { Button } from "react-native-paper";
 
 import {
   ActivityIndicator,
@@ -45,12 +45,13 @@ export default class App extends React.Component {
             {image ? null : (
               <Image
                 source={{
-                  uri: "https://res.cloudinary.com/duehwryfv/image/upload/v1621754114/Screen_Shot_2021-05-23_at_12.13.38_AM_ukxsdy.png",
+                  uri: "https://res.cloudinary.com/duehwryfv/image/upload/v1621757309/Screen_Shot_2021-05-23_at_1.07.55_AM_fpq8xn.png",
                 }}
                 style={{ width: 450, height: 500 }}
               />
             )}
           </View>
+		  
 
           <View style={styles.helpContainer}>
             {this._maybeRenderImage()}
@@ -63,7 +64,6 @@ export default class App extends React.Component {
             <FAB
               icon="camera"
               style={styles.fab}
-              small
               onPress={this._takePhoto}
               title="Take a photo"
             />
@@ -293,7 +293,6 @@ async function uploadImageAsync(uri) {
 
   return await snapshot.ref.getDownloadURL();
 }
-const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
 
 const styles = StyleSheet.create({
   container: {
@@ -326,7 +325,7 @@ const styles = StyleSheet.create({
   },
 
   helpContainer: {
-    marginTop: 15,
+    marginTop: 180,
     alignItems: "center",
   },
 });
