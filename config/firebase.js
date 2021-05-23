@@ -1,5 +1,6 @@
 // firebase.js
 import * as firebase from 'firebase';
+import Environment from './environment.js';
 
 firebase.initializeApp({
   apiKey: Environment['FIREBASE_API_KEY'],
