@@ -8,8 +8,7 @@ import {
   IconButton,
   Paragraph,
   Dialog,
-  Portal,
-  Modal
+  Portal
 } from "react-native-paper";
 
 import {
@@ -22,6 +21,8 @@ import {
   Text,
   ScrollView,
   View,
+  Modal,
+  Pressable
 } from "react-native";
 import Environment from "./config/environment";
 import firebase from "./config/firebase";
@@ -156,7 +157,9 @@ export default class App extends React.Component {
 			  icon="check-outline"
               mode="contained"
               style={{ marginBottom: 10 }}
-              onPress={() => this.submitToGoogle()}
+              onPress={() => {
+                this.submitToGoogle()
+                }}
               title="Verify"
             >
               Verify
@@ -177,12 +180,52 @@ export default class App extends React.Component {
     
         { googleResponse== null? null : 
 			!this._detectBycle(googleResponse) ?
-		  <Modal visible={this.state.visible} onDismiss={false} contentContainerStyle={containerStyle}>
-          <Text>Perfect Gina! Keep it up :)</Text>
-          </Modal>
-         : <Modal visible={this.state.visible} onDismiss={false} contentContainerStyle={containerStyle}>
-          <Text>Oops! Seems like it's not a right photo. Do you want to retake it?</Text>
-        </Modal>
+		  <View style={styles.centeredView}>
+      <Modal 
+      visible={this.state.visible} 
+      animationType="slide"
+      onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            this._hideModal();
+          }}
+      contentContainerStyle={containerStyle}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Perfect Gina! Keep it up :) </Text>
+              <Pressable
+                style={[styles.buttonModal, styles.buttonCloseModal]}
+                onPress={() => this._hideModal()}
+              >
+                <Text style={styles.textStyle}>Yay!</Text>
+              </Pressable>
+            </View>
+          </View>
+       </Modal>
+       </View>
+      :  <View style={styles.centeredView}>
+      <Modal 
+      visible={this.state.visible} 
+      animationType="slide"
+      onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            this._hideModal();
+          }}
+      contentContainerStyle={containerStyle}>
+          {/* <Text>Oops! Seems like it's not a right photo. Do you want to retake it?</Text>\] */}
+
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Oops! Seems like it's not a right photo. Do you want to retake it?</Text>
+              <Pressable
+                style={[styles.buttonModal, styles.buttonCloseModal]}
+                onPress={() => this._hideModal()}
+              >
+                <Text style={styles.textStyle}>Got it!</Text>
+              </Pressable>
+            </View>
+          </View>
+       </Modal>
+       </View>
 		}
       </View>
     );
@@ -202,8 +245,8 @@ export default class App extends React.Component {
   };
 
   _showModal = () => this.setState({visible: true});
-  _hideModal = () => {
-	  if(this.state.visible = true) this.setState({visible: false});
+  _hideModal = async () => {
+    this.setState({visible: false});
   }
   _keyExtractor = (item, index) => item.id;
 
@@ -373,5 +416,46 @@ const styles = StyleSheet.create({
   helpContainer: {
     marginTop: 180,
     alignItems: "center",
+  },
+  buttonModal: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpenModal: {
+    backgroundColor: "#334390",
+  },
+  buttonCloseModal: {
+    backgroundColor: "#334390",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
   },
 });
