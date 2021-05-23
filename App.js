@@ -154,18 +154,38 @@ export default class App extends React.Component {
 
         <Text>Raw JSON:</Text>
 
-        {googleResponse && (
+        { !this._detectBycle(googleResponse) ?
           <Text
             onPress={this._copyToClipboard}
             onLongPress={this._share}
             style={{ paddingVertical: 10, paddingHorizontal: 10 }}
           >
-            {JSON.stringify(googleResponse.responses)}
+            Great Job! Keep it up!
           </Text>
-        )}
+         : <Text
+            onPress={this._copyToClipboard}
+            onLongPress={this._share}
+            style={{ paddingVertical: 10, paddingHorizontal: 10 }}
+          >
+            Oops Seems like it's not a right photo. Do you want to retake it?
+          </Text>
+		}
       </View>
     );
   };
+
+  _detectBycle = async (googleResponse) => {
+	  if(!responseList) return false
+	  let returnVal = false
+	  let responseList = googleResponse.responses[0].labelAnnotations[0].description 
+	  responseList.forEach(element => {
+		  if(element.description =="Bicycle") {
+			  returnVal = true
+		  }
+	});
+	return returnVal
+  };
+
 
   _keyExtractor = (item, index) => item.id;
 
