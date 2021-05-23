@@ -1,10 +1,17 @@
 import React from "react";
 import * as Expo from "expo";
 import * as ImagePicker from "expo-image-picker";
-import * as Permissions from "expo-permissions";
 import uuid from "uuid-random";
-import { FAB } from "react-native-paper";
-import { Avatar, Button, Card, Title, Paragraph, Modal } from "react-native-paper";
+import {
+  Button,
+  FAB,
+  IconButton,
+  Paragraph,
+  Dialog,
+  Portal,
+  Modal
+} from "react-native-paper";
+
 import {
   ActivityIndicator,
   Clipboard,
@@ -27,10 +34,7 @@ export default class App extends React.Component {
 	visible: true,
   };
 
-  async componentDidMount() {
-    await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    await Permissions.askAsync(Permissions.CAMERA);
-  }
+  async componentDidMount() {}
 
   render() {
     let { image } = this.state;
@@ -45,7 +49,7 @@ export default class App extends React.Component {
             {image ? null : (
               <Image
                 source={{
-                  uri: "https://res.cloudinary.com/duehwryfv/image/upload/v1621754114/Screen_Shot_2021-05-23_at_12.13.38_AM_ukxsdy.png",
+                  uri: "https://res.cloudinary.com/duehwryfv/image/upload/v1621759036/Screen_Shot_2021-05-23_at_1.33.06_AM_fnyrnv.png",
                 }}
                 style={{ width: 450, height: 500 }}
               />
@@ -59,14 +63,15 @@ export default class App extends React.Component {
               onPress={this._pickImage}
               title="Pick an image from camera roll"
             />
-
-            <FAB
-              icon="camera"
+            {image ? null :  <Button
+              icon="camera-outline"
+              mode="outlined"
               style={styles.fab}
-              small
               onPress={this._takePhoto}
               title="Take a photo"
-            />
+            >
+              Camera
+            </Button> }
             {this.state.googleResponse && (
               <FlatList
                 data={this.state.googleResponse.responses[0].labelAnnotations}
@@ -120,19 +125,12 @@ export default class App extends React.Component {
       <View
         style={{
           marginTop: 20,
-          width: 250,
+          width: 600,
+		  alignItems: "center",
           borderRadius: 3,
           elevation: 2,
         }}
       >
-        <Button
-          style={{ marginBottom: 10 }}
-          onPress={() => this.submitToGoogle()}
-          title="Analyze!"
-        >
-			Verify
-		</Button>
-
         <View
           style={{
             borderTopRightRadius: 3,
@@ -151,8 +149,34 @@ export default class App extends React.Component {
           onLongPress={this._share}
           style={{ paddingVertical: 10, paddingHorizontal: 10 }}
         />
-
-        { !this._detectBycle(googleResponse) ?
+        <Paragraph>Would you like to upload this picture?</Paragraph>
+        <View style={{flexDirection: "row"}}>
+          <View style={{padding:10}}>
+            <Button
+			  icon="check-outline"
+              mode="contained"
+              style={{ marginBottom: 10 }}
+              onPress={() => this.submitToGoogle()}
+              title="Verify"
+            >
+              Verify
+            </Button>
+          </View>
+		  
+          <View style={{padding:10}}>
+            <Button
+              icon="camera-outline"
+              mode="contained"
+              onPress={this._takePhoto}
+              title="Take a photo"
+            >
+              Camera
+            </Button>
+          </View>
+        </View>
+    
+        { googleResponse== null? null : 
+			!this._detectBycle(googleResponse) ?
 		  <Modal visible={this.state.visible} onDismiss={false} contentContainerStyle={containerStyle}>
           <Text>Perfect Gina! Keep it up :)</Text>
           </Modal>
@@ -181,7 +205,6 @@ export default class App extends React.Component {
   _hideModal = () => {
 	  if(this.state.visible = true) this.setState({visible: false});
   }
-
   _keyExtractor = (item, index) => item.id;
 
   _renderItem = (item) => {
@@ -310,7 +333,6 @@ async function uploadImageAsync(uri) {
 
   return await snapshot.ref.getDownloadURL();
 }
-const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
 
 const styles = StyleSheet.create({
   container: {
@@ -330,11 +352,17 @@ const styles = StyleSheet.create({
   },
 
   getStartedContainer: {
-	marginTop: 15,
+    marginTop: 15,
     alignItems: "center",
-	justifyContent: 'center'
+    justifyContent: "center",
   },
-
+  fab: {
+    borderColor: "rgba(0,0,0,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: 100,
+  },
   getStartedText: {
     fontSize: 17,
     color: "rgba(96,100,109, 1)",
@@ -343,7 +371,7 @@ const styles = StyleSheet.create({
   },
 
   helpContainer: {
-    marginTop: 15,
+    marginTop: 180,
     alignItems: "center",
   },
 });
