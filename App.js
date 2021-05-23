@@ -1,30 +1,34 @@
-import React from "react";
 import * as Expo from "expo";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
-import uuid from "uuid-random";
-import { FAB } from "react-native-paper";
-import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
 
 import {
   ActivityIndicator,
   Clipboard,
   FlatList,
   Image,
+  ScrollView,
   Share,
   StyleSheet,
   Text,
-  ScrollView,
   View,
 } from "react-native";
+import { Avatar, Button, Card, Modal, Paragraph, Portal, Provider, Title } from "react-native-paper";
+import React, { useState } from "react";
+
 import Environment from "./config/environment";
+import { FAB } from "react-native-paper";
+import { Overlay } from 'react-native-elements';
 import firebase from "./config/firebase";
+import uuid from "uuid-random";
 
 export default class App extends React.Component {
+	
   state = {
     image: null,
     uploading: false,
     googleResponse: null,
+		visible: false
   };
 
   async componentDidMount() {
@@ -34,6 +38,7 @@ export default class App extends React.Component {
 
   render() {
     let { image } = this.state;
+		//const [visible, setVisible] = useState(false);
 
     return (
       <View style={styles.container}>
@@ -67,14 +72,46 @@ export default class App extends React.Component {
               onPress={this._takePhoto}
               title="Take a photo"
             />
-            {this.state.googleResponse && (
+						{ !this._detectBycle(googleResponse) ?
+								// <Text
+								// 	onPress={this._copyToClipboard}
+								// 	onLongPress={this._share}
+								// 	style={{ paddingVertical: 10, paddingHorizontal: 10 }}
+								// >
+								// 	Perfect Gina! Keep it up :)
+								// </Text>
+								<Overlay isVisible={this.state.visible} onBackdropPress={this._toggleOverlay}>
+								<Text>Hello from Overlay!</Text>
+							</Overlay>
+							: 
+							// <Text
+							// 		onPress={this._copyToClipboard}
+							// 		onLongPress={this._share}
+							// 		style={{ paddingVertical: 10, paddingHorizontal: 10 }}
+							// 	>
+							// 		Oops! Seems like it's not a right photo. Do you want to retake it?
+							// 	</Text>
+								<Overlay isVisible={this.state.visible} onBackdropPress={this._toggleOverlay}>
+								<Text>Hello from !</Text>
+							</Overlay>
+					  }
+
+  
+            {/* {this.state.googleResponse && (
+							<View>
               <FlatList
                 data={this.state.googleResponse.responses[0].labelAnnotations}
                 extraData={this.state}
                 keyExtractor={this._keyExtractor}
                 renderItem={({ item }) => <Text>Item: {item.description}</Text>}
               />
-            )}
+							<Button title="Open Overlay" onPress={this._toggleOverlay} />
+							<Overlay isVisible={this.state.visible} onBackdropPress={this._toggleOverlay}>
+								<Text>Hello from Overlay!</Text>
+							</Overlay>
+						</View>
+            )} */}
+						
           </View>
         </ScrollView>
       </View>
@@ -167,6 +204,22 @@ export default class App extends React.Component {
     );
   };
 
+	_toggleOverlay = () => {
+    !this.state.visible;
+  };
+
+	_detectBycle = async (googleResponse) => {
+	  if(!responseList) return false
+	  let returnVal = false
+	  let responseList = googleResponse.responses[0].labelAnnotations[0].description 
+	  responseList.forEach(element => {
+		  if(element.description =="Bicycle") {
+			  returnVal = true
+		  }
+	});
+	return returnVal
+  };
+
   _keyExtractor = (item, index) => item.id;
 
   _renderItem = (item) => {
@@ -221,7 +274,7 @@ export default class App extends React.Component {
   };
 
   submitToGoogle = async () => {
-    try {
+    try { 
       this.setState({ uploading: true });
       let { image } = this.state;
       let body = JSON.stringify({
