@@ -179,7 +179,6 @@ export default class App extends React.Component {
         </View>
     
         { googleResponse== null? null : 
-			!this._detectBycle(googleResponse) ?
 		  <View style={styles.centeredView}>
       <Modal 
       visible={this.state.visible} 
@@ -191,43 +190,21 @@ export default class App extends React.Component {
       contentContainerStyle={containerStyle}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Perfect Gina! Keep it up :) </Text>
+            {this._detectBycle(googleResponse) == true 
+            ? <Text style={styles.modalText}>Perfect Gina! Keep it up :) </Text> 
+            : <Text style={styles.modalText}>Oops! Seems like it's not a right photo. Do you want to retake it?</Text>}
               <Pressable
                 style={[styles.buttonModal, styles.buttonCloseModal]}
                 onPress={() => this._hideModal()}
               >
-                <Text style={styles.textStyle}>Yay!</Text>
+                <Text style={styles.textStyle}>Okay</Text>
               </Pressable>
             </View>
           </View>
        </Modal>
        </View>
-      :  <View style={styles.centeredView}>
-      <Modal 
-      visible={this.state.visible} 
-      animationType="slide"
-      onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            this._hideModal();
-          }}
-      contentContainerStyle={containerStyle}>
-          {/* <Text>Oops! Seems like it's not a right photo. Do you want to retake it?</Text>\] */}
-
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Oops! Seems like it's not a right photo. Do you want to retake it?</Text>
-              <Pressable
-                style={[styles.buttonModal, styles.buttonCloseModal]}
-                onPress={() => this._hideModal()}
-              >
-                <Text style={styles.textStyle}>Got it!</Text>
-              </Pressable>
-            </View>
-          </View>
-       </Modal>
-       </View>
-		}
-      </View>
+        }
+        </View>
     );
   };
 
