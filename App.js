@@ -4,8 +4,6 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import uuid from "uuid-random";
 
-console.log(ImagePicker);
-
 import {
 	ActivityIndicator,
 	Button,
@@ -235,6 +233,8 @@ export default class App extends React.Component {
 					}
 				]
 			});
+
+			console.log(image);
 			let response = await fetch(
 				'https://vision.googleapis.com/v1/images:annotate?key=' +
 					Environment['GOOGLE_CLOUD_VISION_API_KEY'],
@@ -248,7 +248,6 @@ export default class App extends React.Component {
 				}
 			);
 			let responseJson = await response.json();
-			console.log(responseJson);
 			this.setState({
 				googleResponse: responseJson,
 				uploading: false
@@ -263,16 +262,12 @@ async function uploadImageAsync(uri) {
 	const blob = await new Promise((resolve, reject) => {
 		const xhr = new XMLHttpRequest();
 		xhr.onload = function() {
-			console.log("xhr" + xhr);
-			console.log("response" + xhr.response);
 			resolve(xhr.response);
 		};
 		xhr.onerror = function(e) {
-			console.log('onerror', + e);
 			reject(new TypeError('Network request failed'));
 		};
 		xhr.responseType = 'blob';
-		console.log('happy')
 		xhr.open('GET', uri, true);
 		xhr.send(null);
 	});
